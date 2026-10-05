@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restaurant Menu Card demo</title>
+  <style>
+    body { margin: 0; padding: 24px; background: #f0f0f0; font-family: sans-serif; }
+    .grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); max-width: 1100px; margin: auto; }
+  </style>
+</head>
+<body>
+  <!-- Open via a local web server, e.g. `python3 -m http.server` from the repo root, then /demo/ -->
+  <div class="grid" id="grid"></div>
+  <script>
+    // Minimal stand-in for Home Assistant's <ha-card>.
+    customElements.define("ha-card", class extends HTMLElement {});
+  </script>
+  <script type="module">
+    import "../dist/restaurant-menu-card.js";
+
+    let items = [
+      { uid: "1", summary: "# Starters", description: "to share", status: "needs_action" },
+      { uid: "2", summary: "Fresh spring rolls - 45k", description: "shrimp, herbs, peanut sauce", status: "needs_action" },
+      { uid: "3", summary: "Crispy calamari .... $9", status: "completed" },
+      { uid: "4", summary: "# Mains", status: "needs_action" },
+      { uid: "5", summary: "Phở bò - 65k", description: "slow-cooked beef broth", status: "needs_action" },
+      { uid: "6", summary: "Bún chả: 60k", status: "needs_action" },
+      { uid: "7", summary: "Grilled salmon €18", description: "lemon butter, greens", status: "needs_action" },
+      { uid: "8", summary: "# Drinks", status: "needs_action" },
+      { uid: "9", summary: "Iced coffee - 30k", status: "needs_action" },
+      { uid: "10", summary: "Fresh coconut", status: "needs_action" },
+    ];
+    const listeners = new Set();
+    const hass = {
+      states: { "todo.menu": { attributes: { friendly_name: "Today's Menu" } } },
+      connection: {
+        subscribeMessage: async (cb) => { listeners.add(cb); cb({ items }); return () => listeners.delete(cb); },
+      },
+      callWS: async () => ({ items }),
+      callService: async (_d, _s, data) => {
+        items = items.map((i) => (i.uid === data.item ? { ...i, status: data.status } : i));
+        listeners.forEach((cb) => cb({ items }));
+      },
+    };
+
+    const configs = [
+      { entity: "todo.menu", subtitle: "Fresh from the kitchen", footer: "Bon appétit!", show_completed: true, tap_to_complete: true },
+      { entity: "todo.menu", title: "Chef's Board", board: "green", columns: 2 },
+    ];
+    for (const config of configs) {
+      const card = document.createElement("restaurant-menu-card");
+      card.setConfig(config);
+      document.getElementById("grid").appendChild(card);
+      card.hass = hass;
+    }
+  </script>
+</body>
+</html>
