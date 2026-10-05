@@ -4,13 +4,13 @@
  * as a hand-written restaurant chalkboard menu.
  */
 
-const CARD_VERSION = "1.0.1";
+const CARD_VERSION = "1.0.2";
 const CARD_TAG = "restaurant-menu-card";
 const EDITOR_TAG = "restaurant-menu-card-editor";
 
 const FONT_LINK_ID = "restaurant-menu-card-fonts";
 const FONT_URL =
-  "https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Fredericka+the+Great&display=swap";
+  "https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Pacifico&subset=vietnamese&display=swap";
 
 const DEFAULTS = {
   title: "",
@@ -115,9 +115,9 @@ const STYLES = `
     padding: 24px 26px 20px;
     border-radius: 6px;
     color: var(--chalk);
-    font-family: "Caveat", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
-    font-size: 22px;
-    line-height: 1.2;
+    font-family: "Patrick Hand", "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: 20px;
+    line-height: 1.35;
     background-color: #232729;
     background-image:
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
@@ -132,10 +132,10 @@ const STYLES = `
 
   header { text-align: center; margin-bottom: 14px; }
   .title {
-    font-family: "Fredericka the Great", "Caveat", cursive;
-    font-size: 2.1em;
-    letter-spacing: .04em;
-    line-height: 1.05;
+    font-family: "Pacifico", "Patrick Hand", cursive;
+    font-size: 1.9em;
+    letter-spacing: 0;
+    line-height: 1.45;
   }
   .no-fonts .title { font-family: inherit; }
   .subtitle { color: var(--chalk-dim); font-size: .95em; margin-top: 4px; }
@@ -154,7 +154,7 @@ const STYLES = `
   .menu { column-gap: 32px; }
   .section { break-inside: avoid; margin-bottom: 14px; }
   .section-title {
-    font-weight: 700;
+    font-weight: 400;
     font-size: 1.3em;
     letter-spacing: .05em;
     text-transform: uppercase;
@@ -167,7 +167,7 @@ const STYLES = `
   .item { break-inside: avoid; padding: 4px 0; }
   .item.clickable { cursor: pointer; }
   .item-line { display: flex; align-items: baseline; }
-  .item-name { font-weight: 600; }
+  .item-name { font-size: 1.05em; }
   .dots {
     flex: 1;
     min-width: 16px;
@@ -175,7 +175,7 @@ const STYLES = `
     border-bottom: 2px dotted rgba(246, 244, 236, .35);
     transform: translateY(-.25em);
   }
-  .item-price { font-weight: 700; color: #f9e27d; white-space: nowrap; }
+  .item-price { color: #f9e27d; white-space: nowrap; }
   .item-description {
     color: var(--chalk-dim);
     font-size: .82em;
