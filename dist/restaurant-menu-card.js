@@ -4,13 +4,13 @@
  * as a hand-written restaurant chalkboard menu.
  */
 
-const CARD_VERSION = "1.0.2";
+const CARD_VERSION = "1.0.3";
 const CARD_TAG = "restaurant-menu-card";
 const EDITOR_TAG = "restaurant-menu-card-editor";
 
 const FONT_LINK_ID = "restaurant-menu-card-fonts";
 const FONT_URL =
-  "https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Pacifico&subset=vietnamese&display=swap";
+  "https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;600&family=Fredericka+the+Great&display=swap";
 
 const DEFAULTS = {
   title: "",
@@ -132,13 +132,13 @@ const STYLES = `
 
   header { text-align: center; margin-bottom: 14px; }
   .title {
-    font-family: "Pacifico", "Patrick Hand", cursive;
-    font-size: 1.9em;
-    letter-spacing: 0;
-    line-height: 1.45;
+    font-family: "Fredericka the Great", "Patrick Hand", cursive;
+    font-size: 2.1em;
+    letter-spacing: .04em;
+    line-height: 1.2;
   }
-  .no-fonts .title { font-family: inherit; }
-  .subtitle { color: var(--chalk-dim); font-size: .95em; margin-top: 4px; }
+  .no-fonts .title, .no-fonts .subtitle { font-family: inherit; }
+  .subtitle { font-family: "Caveat", "Patrick Hand", cursive; color: var(--chalk-dim); font-size: 1.1em; margin-top: 4px; }
   .flourish {
     display: block;
     width: min(240px, 70%);
