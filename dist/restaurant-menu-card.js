@@ -4,7 +4,7 @@
  * as a hand-written restaurant chalkboard menu.
  */
 
-const CARD_VERSION = "1.0.0";
+const CARD_VERSION = "1.0.1";
 const CARD_TAG = "restaurant-menu-card";
 const EDITOR_TAG = "restaurant-menu-card-editor";
 
@@ -466,6 +466,23 @@ const EDITOR_LABELS = {
   chalk_fonts: "Chalk fonts (Google Fonts)",
 };
 
+// Home Assistant lazy-loads <ha-form> and its pickers. Loading a built-in card's
+// editor forces them to be defined so the custom editor isn't rendered empty.
+let haFormLoading;
+function loadHaForm() {
+  if (customElements.get("ha-form") && customElements.get("ha-entity-picker")) return Promise.resolve();
+  haFormLoading ||= (async () => {
+    try {
+      const helpers = await window.loadCardHelpers?.();
+      const card = await helpers?.createCardElement({ type: "entities", entities: [] });
+      await card?.constructor?.getConfigElement?.();
+    } catch (err) {
+      console.warn("restaurant-menu-card: could not preload ha-form", err);
+    }
+  })();
+  return haFormLoading;
+}
+
 class RestaurantMenuCardEditor extends HTMLElement {
   setConfig(config) {
     this._config = config;
@@ -477,8 +494,15 @@ class RestaurantMenuCardEditor extends HTMLElement {
     this._update();
   }
 
+  connectedCallback() {
+    loadHaForm().then(() => {
+      this._formReady = true;
+      this._update();
+    });
+  }
+
   _update() {
-    if (!this._config || !this._hass) return;
+    if (!this._config || !this._hass || !this._formReady) return;
     if (!this._form) {
       this._form = document.createElement("ha-form");
       this._form.schema = EDITOR_SCHEMA;
