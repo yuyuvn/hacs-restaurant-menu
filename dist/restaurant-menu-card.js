@@ -4,7 +4,7 @@
  * as a hand-written restaurant chalkboard menu.
  */
 
-const CARD_VERSION = "1.0.3";
+const CARD_VERSION = "1.0.4";
 const CARD_TAG = "restaurant-menu-card";
 const EDITOR_TAG = "restaurant-menu-card-editor";
 
@@ -137,6 +137,8 @@ const STYLES = `
     letter-spacing: .04em;
     line-height: 1.2;
   }
+  .title.clickable { cursor: pointer; display: inline-block; border-radius: 6px; outline: none; }
+  .title.clickable:focus-visible { box-shadow: 0 0 0 2px rgba(246, 244, 236, .5); }
   .no-fonts .title, .no-fonts .subtitle { font-family: inherit; }
   .subtitle { font-family: "Caveat", "Patrick Hand", cursive; color: var(--chalk-dim); font-size: 1.1em; margin-top: 4px; }
   .flourish {
@@ -233,6 +235,7 @@ class RestaurantMenuCard extends HTMLElement {
     this._error = undefined;
     this._unsub = undefined;
     this.shadowRoot.addEventListener("click", (ev) => this._handleClick(ev));
+    this.shadowRoot.addEventListener("keydown", (ev) => this._handleKeyDown(ev));
   }
 
   static getConfigElement() {
@@ -329,7 +332,34 @@ class RestaurantMenuCard extends HTMLElement {
     pending.then((unsub) => typeof unsub === "function" && unsub()).catch(() => {});
   }
 
+  _hasTitleAction() {
+    const action = this._config?.title_tap_action;
+    return Boolean(action && action.action && action.action !== "none");
+  }
+
+  _fireTitleAction() {
+    // Let Home Assistant run the standard action (navigate, more-info, url, perform-action, ...).
+    this.dispatchEvent(
+      new CustomEvent("hass-action", {
+        bubbles: true,
+        composed: true,
+        detail: { config: { entity: this._config.entity, tap_action: this._config.title_tap_action }, action: "tap" },
+      })
+    );
+  }
+
+  _handleKeyDown(ev) {
+    if ((ev.key === "Enter" || ev.key === " ") && this._hasTitleAction() && ev.composedPath().some((n) => n?.classList?.contains("title"))) {
+      ev.preventDefault();
+      this._fireTitleAction();
+    }
+  }
+
   _handleClick(ev) {
+    if (this._hasTitleAction() && ev.composedPath().some((node) => node?.classList?.contains("title"))) {
+      this._fireTitleAction();
+      return;
+    }
     if (!this._config?.tap_to_complete || !this._hass) return;
     const el = ev.composedPath().find((node) => node?.dataset?.uid);
     if (!el) return;
@@ -400,7 +430,11 @@ class RestaurantMenuCard extends HTMLElement {
         <div class="frame ${c.frame ? "" : "no-frame"}">
           <div class="${boardClasses}">
             <header>
-              <div class="title">${escapeHtml(title)}</div>
+              ${
+                this._hasTitleAction()
+                  ? `<div class="title clickable" role="button" tabindex="0">${escapeHtml(title)}</div>`
+                  : `<div class="title">${escapeHtml(title)}</div>`
+              }
               ${c.subtitle ? `<div class="subtitle">${escapeHtml(c.subtitle)}</div>` : ""}
               ${FLOURISH}
             </header>
@@ -418,6 +452,7 @@ const EDITOR_SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "subtitle", selector: { text: {} } },
   { name: "footer", selector: { text: {} } },
+  { name: "title_tap_action", selector: { ui_action: {} } },
   {
     type: "grid",
     name: "",
@@ -456,6 +491,7 @@ const EDITOR_LABELS = {
   title: "Title (defaults to the list name)",
   subtitle: "Subtitle",
   footer: "Footer",
+  title_tap_action: "Title tap action",
   columns: "Columns",
   board: "Board style",
   show_completed: "Show completed items as sold out",

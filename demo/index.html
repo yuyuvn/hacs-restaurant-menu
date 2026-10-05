@@ -45,9 +45,13 @@
     };
 
     const configs = [
-      { entity: "todo.menu", subtitle: "Fresh from the kitchen", footer: "Bon appétit!", show_completed: true, tap_to_complete: true },
+      { entity: "todo.menu", subtitle: "Fresh from the kitchen", footer: "Bon appétit!", show_completed: true, tap_to_complete: true,
+        title_tap_action: { action: "navigate", navigation_path: "/lovelace/menu" } },
       { entity: "todo.menu", title: "Thực đơn hôm nay", board: "green", columns: 2 },
     ];
+    // Home Assistant normally handles this event; the demo just shows what it received.
+    window.addEventListener("hass-action", (ev) => alert("hass-action: " + JSON.stringify(ev.detail.config.tap_action)));
+
     for (const config of configs) {
       const card = document.createElement("restaurant-menu-card");
       card.setConfig(config);

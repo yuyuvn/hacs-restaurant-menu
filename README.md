@@ -60,6 +60,7 @@ columns: 2
 | `title`             | string  | list name      | The big title at the top                                     |
 | `subtitle`          | string  |                | Smaller text under the title                                 |
 | `footer`            | string  |                | Text at the bottom of the board                              |
+| `title_tap_action`  | action  | none           | What happens when the title is tapped (see below)            |
 | `columns`           | number  | `1`            | Number of menu columns (1–4)                                 |
 | `board`             | string  | `black`        | `black` or `green` chalkboard                                |
 | `show_completed`    | boolean | `false`        | Show completed items as "sold out"                           |
@@ -68,6 +69,26 @@ columns: 2
 | `tap_to_complete`   | boolean | `false`        | Tap an item to mark it sold out or available again           |
 | `frame`             | boolean | `true`         | Show the wooden frame and chalk tray                         |
 | `chalk_fonts`       | boolean | `true`         | Load chalk-style fonts from Google Fonts (turn off if offline) |
+
+### Title tap action
+
+`title_tap_action` uses the same format as the `tap_action` option on Home
+Assistant's built-in cards, so all standard actions work: `navigate`, `url`,
+`more-info`, `perform-action`, `toggle`, `assist` and `none`. You can also set
+it in the visual editor.
+
+```yaml
+type: custom:restaurant-menu-card
+entity: todo.restaurant_menu
+title_tap_action:
+  action: navigate
+  navigation_path: /dashboard-kitchen/menu
+```
+
+```yaml
+title_tap_action:
+  action: more-info   # opens the to-do list
+```
 
 ## Development
 
